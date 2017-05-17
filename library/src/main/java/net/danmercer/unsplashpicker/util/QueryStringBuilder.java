@@ -12,24 +12,20 @@ import java.util.List;
  *
  * @author Dan Mercer
  */
-class QueryStringBuilder {
+public class QueryStringBuilder {
 	private final List<Pair<String, Object>> pairs = new LinkedList<Pair<String, Object>>();
 	private final String url;
 
-	QueryStringBuilder() {
-		this.url = null;
-	}
-
-	QueryStringBuilder(String url) {
+	public QueryStringBuilder(String url) {
 		this.url = url;
 	}
 
-	QueryStringBuilder add(String key, Object value) {
+	public QueryStringBuilder add(String key, Object value) {
 		pairs.add(new Pair<>(key, value));
 		return this;
 	}
 
-	String build() {
+	public String build() {
 		StringBuilder sb = new StringBuilder();
 
 		// Start with URL if given

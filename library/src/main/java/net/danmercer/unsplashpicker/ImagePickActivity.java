@@ -1,5 +1,7 @@
 package net.danmercer.unsplashpicker;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
@@ -9,15 +11,16 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Toast;
 
 import net.danmercer.unsplashpicker.data.PhotoInfo;
 import net.danmercer.unsplashpicker.util.UnsplashApiUtils;
 import net.danmercer.unsplashpicker.util.UnsplashQuery;
+import net.danmercer.unsplashpicker.util.async.PhotoDownloader;
 import net.danmercer.unsplashpicker.view.ImageQueryAdapter;
 import net.danmercer.unsplashpicker.view.ImageRecyclerView;
+
+import java.io.File;
 
 /**
  * The main picker activity.
@@ -28,12 +31,13 @@ public class ImagePickActivity extends AppCompatActivity {
 
 	private ImageQueryAdapter adapter;
 	private UnsplashQuery query;
+	private String appID;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		final String appID = UnsplashApiUtils.getApiKey(this);
+		appID = UnsplashApiUtils.getApiKey(this);
 		if (appID == null) {
 			Toast.makeText(this, "Error: no app ID!", Toast.LENGTH_LONG).show();
 			finish();
@@ -68,7 +72,7 @@ public class ImagePickActivity extends AppCompatActivity {
 		adapter.setOnPhotoChosenListener(new ImageQueryAdapter.OnPhotoChosenListener() {
 			@Override
 			public void onPhotoChosen(PhotoInfo choice) {
-				Toast.makeText(ImagePickActivity.this, "Photo by " + choice.authorName + " chosen", Toast.LENGTH_SHORT).show();
+				downloadAndFinish(choice);
 			}
 		});
 
@@ -114,5 +118,19 @@ public class ImagePickActivity extends AppCompatActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void downloadAndFinish(PhotoInfo photo) {
+		final File file = new File(getCacheDir(), "unsplash-image.jpg");
+		final PhotoDownloader downloader = new PhotoDownloader(photo, file, appID);
+		downloader.download(new PhotoDownloader.OnDownloadCompleteListener() {
+			@Override
+			public void onDownloadComplete(File file) {
+				final Intent result = new Intent();
+				result.setData(Uri.fromFile(file));
+				setResult(RESULT_OK, result);
+				finish();
+			}
+		});
 	}
 }

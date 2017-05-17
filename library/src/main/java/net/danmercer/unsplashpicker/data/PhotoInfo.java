@@ -2,6 +2,8 @@ package net.danmercer.unsplashpicker.data;
 
 import android.util.Log;
 
+import net.danmercer.unsplashpicker.util.QueryStringBuilder;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,5 +55,11 @@ public class PhotoInfo {
 		this.authorURL = authorURL;
 		this.thumbPhotoURL = thumbPhotoURL;
 		this.id = id;
+	}
+
+	public String getDetailsUrl(String appID) {
+		return new QueryStringBuilder("https://api.unsplash.com/photos/" + id)
+				.add("client_id", appID)
+				.build();
 	}
 }
