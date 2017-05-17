@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
 /**
  * @author Dan Mercer
  */
-public abstract class JsonTask<T> extends HttpTask<T> {
+public abstract class JsonTask<T> extends HttpTask<Object> {
 
 	private static final String TAG = "JsonTask";
 
@@ -22,7 +22,7 @@ public abstract class JsonTask<T> extends HttpTask<T> {
 	}
 
 	@Override
-	T readStream(InputStream stream) throws IOException {
+	Object readStream(InputStream stream) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 
 		StringBuilder sb = new StringBuilder();
@@ -33,13 +33,8 @@ public abstract class JsonTask<T> extends HttpTask<T> {
 		}
 
 		try {
-			final Object o = new JSONTokener(sb.toString()).nextValue();
-			//noinspection unchecked (The unchecked cast is OK.)
-			return (T) o;
+			return new JSONTokener(sb.toString()).nextValue();
 
-		} catch (ClassCastException e) {
-			Log.e(TAG, "Result of JSON parse is not right type.", e);
-			return null;
 		} catch (JSONException e) {
 			Log.e(TAG, "Bad JSON:", e);
 			return null;
@@ -47,9 +42,14 @@ public abstract class JsonTask<T> extends HttpTask<T> {
 	}
 
 	@Override
-	protected void onPostExecute(T result) {
+	protected void onPostExecute(Object result) {
 		if (result != null) {
-			onJsonObtained(result);
+			try {
+				//noinspection unchecked (This unchecked cast is OK, any errors will be caught.)
+				onJsonObtained((T) result);
+			} catch (ClassCastException e) {
+				Log.e(TAG, "Result of JSON parse is not right type.", e);
+			}
 		}
 	}
 
