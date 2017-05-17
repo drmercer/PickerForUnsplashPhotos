@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Picker for Unsplash Photos</string>
+    <string name="label_picker_activity">Choose Photo from Unsplash</string>
 </resources>

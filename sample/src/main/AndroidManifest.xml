@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="net.danmercer.unsplashpicker.sample">
 
     <application
@@ -16,6 +17,14 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="net.danmercer.unsplashpicker.ImagePickActivity"
+            android:theme="@style/AppTheme"
+            android:label="Overridden Label"
+            tools:replace="android:label,android:theme">
+        </activity>
+
     </application>
 
 </manifest>
