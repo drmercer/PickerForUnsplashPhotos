@@ -23,7 +23,6 @@ import net.danmercer.unsplashpicker.view.ImageRecyclerView;
  */
 public class ImagePickActivity extends AppCompatActivity {
 
-	private ImageRecyclerView view;
 	private ImageQueryAdapter adapter;
 	private UnsplashQuery query;
 
@@ -37,7 +36,7 @@ public class ImagePickActivity extends AppCompatActivity {
 			finish();
 		}
 
-		view = new ImageRecyclerView(this);
+		ImageRecyclerView view = new ImageRecyclerView(this);
 
 		final GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
 		view.setLayoutManager(layoutManager);
@@ -58,7 +57,6 @@ public class ImagePickActivity extends AppCompatActivity {
 					// Scroll has reached the end, load another page
 					query.nextPage();
 					adapter.updateQuery(query);
-					Toast.makeText(ImagePickActivity.this, "Loading more photos", Toast.LENGTH_SHORT).show();
 				}
 			}
 		});
