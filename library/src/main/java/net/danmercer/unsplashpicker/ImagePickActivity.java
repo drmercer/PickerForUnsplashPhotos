@@ -3,15 +3,14 @@ package net.danmercer.unsplashpicker;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import net.danmercer.unsplashpicker.util.UnsplashApiUtils;
-import net.danmercer.unsplashpicker.util.UnsplashQuery;
-import net.danmercer.unsplashpicker.util.async.JsonTask;
-
-import org.json.JSONArray;
+import net.danmercer.unsplashpicker.view.ImageQueryAdapter;
+import net.danmercer.unsplashpicker.view.ImageRecyclerView;
 
 /**
  * The main picker activity.
@@ -19,6 +18,9 @@ import org.json.JSONArray;
  * @author Dan Mercer
  */
 public class ImagePickActivity extends AppCompatActivity {
+
+	private ImageRecyclerView view;
+	private ImageQueryAdapter adapter;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -30,19 +32,14 @@ public class ImagePickActivity extends AppCompatActivity {
 			finish();
 		}
 
-		// Testing querying stuff:
+		view = new ImageRecyclerView(this);
 
-		final UnsplashQuery query = new UnsplashQuery(appID);
+		view.setLayoutManager(new GridLayoutManager(this, 2));
 
-		final JsonTask task = new JsonTask<JSONArray>(query.toURL()) {
-			@Override
-			protected void onJsonObtained(JSONArray arr) {
-				final int length = arr.length();
-				// length should be 10
-				Toast.makeText(ImagePickActivity.this, length == 10 ? "Success!" : "Error. Wrong array length :(", Toast.LENGTH_SHORT).show();
-			}
-		};
-		task.execute();
+		adapter = new ImageQueryAdapter(this);
+		view.setAdapter(adapter);
+
+		setContentView(view);
 	}
 
 	@Override

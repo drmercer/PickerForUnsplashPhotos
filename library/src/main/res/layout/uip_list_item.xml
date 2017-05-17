@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/uip_item_image"
+        android:layout_width="match_parent"
+        android:src="@android:drawable/spinner_background"
+        android:layout_height="wrap_content"
+        android:padding="8dp"/>
+
+    <TextView
+        android:id="@+id/uip_item_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bagel!"
+        android:background="#6000"
+        android:textColor="#fff"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_gravity="bottom"/>
+</FrameLayout>
