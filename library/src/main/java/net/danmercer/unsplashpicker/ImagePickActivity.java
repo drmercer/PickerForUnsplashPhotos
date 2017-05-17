@@ -90,7 +90,7 @@ public class ImagePickActivity extends AppCompatActivity {
 		menu.add("Clear search").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem menuItem) {
-				query.cancelSearch();
+				query.numPerPage(100).cancelSearch();
 				adapter.updateQuery(query);
 
 				return true;

@@ -26,10 +26,16 @@ public class UnsplashQuery {
 	private boolean isNew = false;
 	private final String appID;
 	private int pageNumber = 1;
+	private int numPerPage = 20;
 	private boolean isLoading;
 
 	public UnsplashQuery(String appID) {
 		this.appID = appID;
+	}
+
+	public UnsplashQuery numPerPage(int num) {
+		this.numPerPage = num;
+		return this;
 	}
 
 	public UnsplashQuery nextPage() {
@@ -59,19 +65,20 @@ public class UnsplashQuery {
 			return new QueryStringBuilder("https://api.unsplash.com/photos")
 					.add("client_id", appID)
 					.add("page", pageNumber)
+					.add("per_page", numPerPage)
 					.build();
 		} else {
 			return new QueryStringBuilder("https://api.unsplash.com/search/photos")
 					.add("client_id", appID)
 					.add("query", searchQuery)
 					.add("page", pageNumber)
+					.add("per_page", numPerPage)
 					.build();
 		}
 	}
 
 	public void load(final OnLoadedListener onLoadedListener) {
 		isNew = false;
-		// TODO: Don't expect JSONArray for search queries
 		if (searchQuery == null) {
 
 			// Just load photos
