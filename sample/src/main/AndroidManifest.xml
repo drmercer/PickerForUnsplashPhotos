@@ -25,6 +25,10 @@
             tools:replace="android:label,android:theme">
         </activity>
 
+        <meta-data
+            android:name="net.danmercer.unsplashpicker.unsplash_app_id"
+            android:value="sample-Unsplash-app-id"/>
+
     </application>
 
 </manifest>
