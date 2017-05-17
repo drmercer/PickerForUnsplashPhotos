@@ -45,6 +45,11 @@ public class ImageQueryAdapter extends RecyclerView.Adapter<ImageViewHolder> {
 	}
 
 	public void updateQuery(UnsplashQuery query) {
+		if (query.isNew()) {
+			final int size = photos.size();
+			photos.clear();
+			notifyItemRangeRemoved(0, size);
+		}
 		query.load(new UnsplashQuery.OnLoadedListener() {
 			@Override
 			public void onPhotosLoaded(List<PhotoInfo> newPhotos) {

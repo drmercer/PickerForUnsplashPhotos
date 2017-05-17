@@ -7,8 +7,8 @@ import net.danmercer.unsplashpicker.util.async.JsonTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,6 +22,8 @@ public class UnsplashQuery {
 		void onPhotosLoaded(List<PhotoInfo> photos);
 	}
 
+	private String searchQuery = null;
+	private boolean isNew = false;
 	private final String appID;
 	private int pageNumber = 1;
 	private boolean isLoading;
@@ -35,21 +37,72 @@ public class UnsplashQuery {
 		return this;
 	}
 
+	public UnsplashQuery setSearch(String searchQuery) {
+		reset();
+		this.searchQuery = searchQuery;
+		return this; // for chaining
+	}
+
+	public UnsplashQuery cancelSearch() {
+		reset();
+		this.searchQuery = null;
+		return this; // for chaining
+	}
+
+	private void reset() {
+		isNew = true;
+		pageNumber = 1;
+	}
+
 	public String toURL() {
-		return new QueryStringBuilder("https://api.unsplash.com/photos")
-				.add("client_id", appID)
-				.add("page", pageNumber)
-				.build();
+		if (searchQuery == null) {
+			return new QueryStringBuilder("https://api.unsplash.com/photos")
+					.add("client_id", appID)
+					.add("page", pageNumber)
+					.build();
+		} else {
+			return new QueryStringBuilder("https://api.unsplash.com/search/photos")
+					.add("client_id", appID)
+					.add("query", searchQuery)
+					.add("page", pageNumber)
+					.build();
+		}
 	}
 
 	public void load(final OnLoadedListener onLoadedListener) {
-		new JsonTask<JSONArray>(toURL()) {
-			@Override
-			protected void onJsonObtained(JSONArray result) {
-				onLoadedListener.onPhotosLoaded(getPhotosFromResult(result));
-				isLoading = false;
-			}
-		}.execute();
+		isNew = false;
+		// TODO: Don't expect JSONArray for search queries
+		if (searchQuery == null) {
+
+			// Just load photos
+			new JsonTask<JSONArray>(toURL()) {
+				@Override
+				protected void onJsonObtained(JSONArray results) {
+					onLoadedListener.onPhotosLoaded(PhotoInfo.getAllFromJson(results));
+					isLoading = false;
+				}
+			}.execute();
+
+		} else {
+
+			// Load search result photos
+			new JsonTask<JSONObject>(toURL()) {
+				@Override
+				protected void onJsonObtained(JSONObject result) {
+					final JSONArray results;
+					try {
+						results = result.getJSONArray("results");
+						onLoadedListener.onPhotosLoaded(PhotoInfo.getAllFromJson(results));
+
+					} catch (JSONException e) {
+						Log.e(TAG, "JSON error with search results", e);
+						// Fire callback with empty list:
+						onLoadedListener.onPhotosLoaded(new LinkedList<PhotoInfo>());
+					}
+					isLoading = false;
+				}
+			}.execute();
+		}
 		isLoading = true;
 	}
 
@@ -57,17 +110,7 @@ public class UnsplashQuery {
 		return isLoading;
 	}
 
-	public List<PhotoInfo> getPhotosFromResult(Object result) {
-		final JSONArray photosData = (JSONArray) result;
-		final int count = photosData.length();
-		final List<PhotoInfo> photos = new LinkedList<>();
-		for (int i = 0; i < count; i++) {
-			try {
-				photos.add(PhotoInfo.getFromJson(photosData.getJSONObject(i)));
-			} catch (JSONException e) {
-				Log.e(TAG, "Error parsing photo data.", e);
-			}
-		}
-		return photos;
+	public boolean isNew() {
+		return isNew;
 	}
 }

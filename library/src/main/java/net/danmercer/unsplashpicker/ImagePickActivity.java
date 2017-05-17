@@ -67,6 +67,36 @@ public class ImagePickActivity extends AppCompatActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.uip_picker, menu);
+
+		// For debugging:
+		menu.add("Search 'bagel'").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem menuItem) {
+				query.setSearch("bagel");
+				adapter.updateQuery(query);
+
+				return true;
+			}
+		});
+		menu.add("Search 'potato'").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem menuItem) {
+				query.setSearch("potato");
+				adapter.updateQuery(query);
+
+				return true;
+			}
+		});
+		menu.add("Clear search").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem menuItem) {
+				query.cancelSearch();
+				adapter.updateQuery(query);
+
+				return true;
+			}
+		});
+
 		return true;
 	}
 
