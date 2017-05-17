@@ -20,18 +20,32 @@ import java.util.List;
 public class ImageQueryAdapter extends RecyclerView.Adapter<ImageViewHolder> {
 
 
-	private final LayoutInflater inflater;
+	public interface OnPhotoChosenListener {
+		void onPhotoChosen(PhotoInfo choice);
+	}
 
+	private final LayoutInflater inflater;
+	private final View.OnClickListener clickListener;
 	private List<PhotoInfo> photos = new ArrayList<>();
+	private ImageQueryAdapter.OnPhotoChosenListener photoChosenListener = null;
 
 	public ImageQueryAdapter(Context context) {
 		inflater = LayoutInflater.from(context);
+		clickListener = new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				final Object tag = view.getTag();
+				if (photoChosenListener != null && tag != null) {
+					photoChosenListener.onPhotoChosen((PhotoInfo) tag);
+				}
+			}
+		};
 	}
 
 	@Override
 	public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		final View view = inflater.inflate(R.layout.uip_list_item, parent, false);
-		return new ImageViewHolder(view);
+		return new ImageViewHolder(view, clickListener);
 	}
 
 	@Override
@@ -63,5 +77,9 @@ public class ImageQueryAdapter extends RecyclerView.Adapter<ImageViewHolder> {
 				notifyItemRangeInserted(insertPosition, newPhotos.size());
 			}
 		});
+	}
+
+	public void setOnPhotoChosenListener(OnPhotoChosenListener listener) {
+		this.photoChosenListener = listener;
 	}
 }

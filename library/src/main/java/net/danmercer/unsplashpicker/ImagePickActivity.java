@@ -9,8 +9,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
+import net.danmercer.unsplashpicker.data.PhotoInfo;
 import net.danmercer.unsplashpicker.util.UnsplashApiUtils;
 import net.danmercer.unsplashpicker.util.UnsplashQuery;
 import net.danmercer.unsplashpicker.view.ImageQueryAdapter;
@@ -58,6 +61,14 @@ public class ImagePickActivity extends AppCompatActivity {
 					query.nextPage();
 					adapter.updateQuery(query);
 				}
+			}
+		});
+
+		// Set up item click listener
+		adapter.setOnPhotoChosenListener(new ImageQueryAdapter.OnPhotoChosenListener() {
+			@Override
+			public void onPhotoChosen(PhotoInfo choice) {
+				Toast.makeText(ImagePickActivity.this, "Photo by " + choice.authorName + " chosen", Toast.LENGTH_SHORT).show();
 			}
 		});
 

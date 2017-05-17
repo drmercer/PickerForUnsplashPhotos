@@ -25,13 +25,16 @@ class ImageViewHolder extends RecyclerView.ViewHolder {
 	private PhotoInfo currentPhoto;
 	private Bitmap currentBitmap = null;
 
-	public ImageViewHolder(View itemView) {
+	public ImageViewHolder(View itemView, View.OnClickListener listener) {
 		super(itemView);
 		this.imageView = (ImageView) itemView.findViewById(R.id.uip_item_image);
+		imageView.setOnClickListener(listener);
 		this.labelView = (TextView) itemView.findViewById(R.id.uip_item_label);
 	}
 
 	public void loadPhoto(final PhotoInfo photoInfo) {
+		recycle();
+
 		this.currentPhoto = photoInfo;
 
 		labelView.setText(photoInfo.authorName);
@@ -45,6 +48,8 @@ class ImageViewHolder extends RecyclerView.ViewHolder {
 				context.startActivity(i);
 			}
 		});
+
+		imageView.setTag(photoInfo);
 
 		new BitmapTask(photoInfo.thumbPhotoURL) {
 			@Override
@@ -71,6 +76,7 @@ class ImageViewHolder extends RecyclerView.ViewHolder {
 		currentPhoto = null;
 		if (currentBitmap != null) {
 			imageView.setImageDrawable(null);
+			imageView.setTag(null);
 			currentBitmap.recycle();
 			currentBitmap = null;
 		}
