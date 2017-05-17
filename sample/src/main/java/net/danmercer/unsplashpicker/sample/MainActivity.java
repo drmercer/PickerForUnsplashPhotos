@@ -12,6 +12,7 @@ import android.widget.Button;
 
 import net.danmercer.unsplashpicker.ImagePickActivity;
 
+import java.io.File;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,7 +29,15 @@ public class MainActivity extends AppCompatActivity {
 		btn.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				startActivityForResult(new Intent(MainActivity.this, ImagePickActivity.class), REQUEST_IMAGE);
+				final Intent intent = new Intent(MainActivity.this, ImagePickActivity.class);
+
+				// Both the output file extra and the dimension extras are optional.
+				File dest = new File(getCacheDir(), "bagel.jpg");
+				intent.putExtra(ImagePickActivity.EXTRA_OUTPUT_FILE_PATH, dest.getPath());
+				intent.putExtra(ImagePickActivity.EXTRA_IMAGE_WIDTH, view.getWidth());
+				intent.putExtra(ImagePickActivity.EXTRA_IMAGE_HEIGHT, view.getHeight());
+
+				startActivityForResult(intent, REQUEST_IMAGE);
 			}
 		});
 

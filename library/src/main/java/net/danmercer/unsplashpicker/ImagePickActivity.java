@@ -28,6 +28,9 @@ import java.io.File;
  * @author Dan Mercer
  */
 public class ImagePickActivity extends AppCompatActivity {
+	public static final String EXTRA_IMAGE_WIDTH = "net.danmercer.unsplashpicker.IMAGE_WIDTH";
+	public static final String EXTRA_IMAGE_HEIGHT = "net.danmercer.unsplashpicker.IMAGE_HEIGHT";
+	public static final String EXTRA_OUTPUT_FILE_PATH = "net.danmercer.unsplashpicker.OUTPUT_FILE";
 
 	private ImageQueryAdapter adapter;
 	private UnsplashQuery query;
@@ -121,8 +124,18 @@ public class ImagePickActivity extends AppCompatActivity {
 	}
 
 	private void downloadAndFinish(PhotoInfo photo) {
-		final File file = new File(getCacheDir(), "unsplash-image.jpg");
+		final Intent intent = getIntent();
+
+		// Get destination for download
+		String dest = intent.getStringExtra(EXTRA_OUTPUT_FILE_PATH);
+		final File file = (dest != null) ? new File(dest) : new File(getCacheDir(), "unsplash-image.jpg");
+
 		final PhotoDownloader downloader = new PhotoDownloader(photo, file, appID);
+
+		// Get dimension parameters if specified
+		downloader.setDimens(intent.getIntExtra(EXTRA_IMAGE_WIDTH, 0),
+				intent.getIntExtra(EXTRA_IMAGE_HEIGHT, 0));
+
 		downloader.download(new PhotoDownloader.OnDownloadCompleteListener() {
 			@Override
 			public void onDownloadComplete(File file) {
