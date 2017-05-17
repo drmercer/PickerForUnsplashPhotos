@@ -7,3 +7,6 @@
 /build
 /captures
 .externalNativeBuild
+
+# This file contains the UNSPLASH_APP_ID for the sample app:
+sample/gradle.properties
