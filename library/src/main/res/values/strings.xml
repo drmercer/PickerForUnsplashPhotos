@@ -1,4 +1,14 @@
 <resources>
     <string name="app_name">Picker for Unsplash Photos</string>
     <string name="label_picker_activity">Choose Photo from Unsplash</string>
+    <string name="uip_about">
+        <![CDATA[
+        Photos provided by <a href="%s">Unsplash</a>.
+        <br/>
+        Android library <a href="https://github.com/drmercer/PickerForUnsplashPhotos"
+            >coded by Dan Mercer</a>.
+        ]]>
+    </string>
+    <string name="uip_about_title">About</string>
+    <string name="uip_search_title">Search</string>
 </resources>

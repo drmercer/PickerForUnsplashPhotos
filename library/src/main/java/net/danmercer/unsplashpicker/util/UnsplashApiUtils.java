@@ -57,4 +57,8 @@ public class UnsplashApiUtils {
 				.add("utm_campaign", "api-credit")
 				.build();
 	}
+
+	public static String getUnsplashAttribUrl(Context context) {
+		return addUtmParams("https://unsplash.com/", context);
+	}
 }

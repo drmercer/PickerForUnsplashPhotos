@@ -5,12 +5,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import net.danmercer.unsplashpicker.data.PhotoInfo;
@@ -42,7 +46,7 @@ public class ImagePickActivity extends AppCompatActivity {
 
 		appID = UnsplashApiUtils.getApiKey(this);
 		if (appID == null) {
-			Toast.makeText(this, "Error: no app ID!", Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "Development error: no app ID!", Toast.LENGTH_LONG).show();
 			finish();
 		}
 
@@ -117,7 +121,22 @@ public class ImagePickActivity extends AppCompatActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		final int id = item.getItemId();
 		if (id == R.id.uip_action_about) {
-			Toast.makeText(this, "TODO: show About info", Toast.LENGTH_SHORT).show();
+
+			// Show About dialog:
+			AlertDialog.Builder db = new AlertDialog.Builder(this);
+			db.setTitle(R.string.uip_about_title);
+
+			final TextView msg = (TextView) getLayoutInflater().inflate(R.layout.uip_about, null);
+			final String unsplashAttribUrl = UnsplashApiUtils.getUnsplashAttribUrl(this);
+			//noinspection deprecation (Non-deprecated fromHtml() requires Android N.)
+			msg.setText(Html.fromHtml(getString(R.string.uip_about, unsplashAttribUrl)));
+			msg.setMovementMethod(LinkMovementMethod.getInstance());
+			db.setView(msg);
+
+			db.setPositiveButton(android.R.string.ok, null);
+
+			db.show();
+
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

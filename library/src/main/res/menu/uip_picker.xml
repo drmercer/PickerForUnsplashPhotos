@@ -4,11 +4,11 @@
     <item
         android:id="@+id/uip_action_search"
         android:icon="@drawable/ic_action_search"
-        android:title="Search"
+        android:title="@string/uip_search_title"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/uip_action_about"
-        android:title="About"
+        android:title="@string/uip_about_title"
         app:showAsAction="never"/>
 </menu>
