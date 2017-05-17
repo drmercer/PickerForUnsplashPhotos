@@ -1,0 +1,4 @@
+<component name="DependencyValidationManager">
+  <!-- Assign a File Color to this scope to color the sample module's tabs in Android Studio-->
+  <scope name="Sample" pattern="file[sample]:src//*" />
+</component>
