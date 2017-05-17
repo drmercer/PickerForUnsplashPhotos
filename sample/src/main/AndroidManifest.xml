@@ -28,6 +28,9 @@
         <meta-data
             android:name="net.danmercer.unsplashpicker.unsplash_app_id"
             android:value="${unsplashAppId}"/>
+        <meta-data
+            android:name="net.danmercer.unsplashpicker.unsplash_utm_source"
+            android:value="android-picker-sample"/>
 
     </application>
 

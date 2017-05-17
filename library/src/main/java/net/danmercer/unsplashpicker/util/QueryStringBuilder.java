@@ -32,7 +32,7 @@ class QueryStringBuilder {
 
 		// Start with URL if given
 		if (url != null) {
-			sb.append(url).append("?");
+			sb.append(url).append((url.indexOf('?') != -1) ? '&' : '?');
 		}
 
 		// Concatenate pairs together
