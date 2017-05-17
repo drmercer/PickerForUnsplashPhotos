@@ -34,11 +34,14 @@ public class QueryStringBuilder {
 		}
 
 		// Concatenate pairs together
+		boolean first = true;
 		for (Pair<String, Object> pair : pairs) {
 
 			// Separate pairs with '&'
-			if (sb.length() > 0) {
+			if (!first) {
 				sb.append("&");
+			} else {
+				first = false;
 			}
 
 			sb.append(urlEncode(pair.first))
