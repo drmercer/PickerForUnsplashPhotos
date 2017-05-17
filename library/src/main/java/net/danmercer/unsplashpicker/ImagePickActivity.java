@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import net.danmercer.unsplashpicker.util.UnsplashApiUtils;
+import net.danmercer.unsplashpicker.util.UnsplashQuery;
 import net.danmercer.unsplashpicker.view.ImageQueryAdapter;
 import net.danmercer.unsplashpicker.view.ImageRecyclerView;
 
@@ -21,6 +22,7 @@ public class ImagePickActivity extends AppCompatActivity {
 
 	private ImageRecyclerView view;
 	private ImageQueryAdapter adapter;
+	private UnsplashQuery query;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,6 +40,9 @@ public class ImagePickActivity extends AppCompatActivity {
 
 		adapter = new ImageQueryAdapter(this);
 		view.setAdapter(adapter);
+
+		query = new UnsplashQuery(appID);
+		adapter.updateQuery(query);
 
 		setContentView(view);
 	}

@@ -7,6 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import net.danmercer.unsplashpicker.R;
+import net.danmercer.unsplashpicker.data.PhotoInfo;
+import net.danmercer.unsplashpicker.util.UnsplashQuery;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Dan Mercer
@@ -16,6 +21,8 @@ public class ImageQueryAdapter extends RecyclerView.Adapter<ImageViewHolder> {
 
 
 	private final LayoutInflater inflater;
+
+	private List<PhotoInfo> photos = new ArrayList<>();
 
 	public ImageQueryAdapter(Context context) {
 		inflater = LayoutInflater.from(context);
@@ -29,11 +36,22 @@ public class ImageQueryAdapter extends RecyclerView.Adapter<ImageViewHolder> {
 
 	@Override
 	public void onBindViewHolder(ImageViewHolder holder, int position) {
-		// TODO: load image
+		holder.loadPhoto(photos.get(position));
 	}
 
 	@Override
 	public int getItemCount() {
-		return 20;
+		return photos.size();
+	}
+
+	public void updateQuery(UnsplashQuery query) {
+		query.load(new UnsplashQuery.OnLoadedListener() {
+			@Override
+			public void onPhotosLoaded(List<PhotoInfo> newPhotos) {
+				int insertPosition = photos.size();
+				photos.addAll(newPhotos);
+				notifyItemRangeInserted(insertPosition, newPhotos.size());
+			}
+		});
 	}
 }

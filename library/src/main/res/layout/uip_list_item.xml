@@ -2,11 +2,13 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
+
     <ImageView
         android:id="@+id/uip_item_image"
         android:layout_width="match_parent"
-        android:src="@android:drawable/spinner_background"
-        android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
+        android:cropToPadding="true"
+        android:layout_height="140dp"
         android:padding="8dp"/>
 
     <TextView
