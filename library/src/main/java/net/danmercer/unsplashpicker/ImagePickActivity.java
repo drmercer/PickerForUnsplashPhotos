@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -36,13 +37,29 @@ public class ImagePickActivity extends AppCompatActivity {
 
 		view = new ImageRecyclerView(this);
 
-		view.setLayoutManager(new GridLayoutManager(this, 2));
+		final GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+		view.setLayoutManager(layoutManager);
 
 		adapter = new ImageQueryAdapter(this);
 		view.setAdapter(adapter);
 
 		query = new UnsplashQuery(appID);
 		adapter.updateQuery(query);
+
+		// Listen for scroll to the end, and load more photos
+		view.addOnScrollListener(new RecyclerView.OnScrollListener() {
+			@Override
+			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+				final int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+				final int itemCount = adapter.getItemCount();
+				if (lastVisibleItemPosition+1 >= itemCount && !query.isLoading()) {
+					// Scroll has reached the end, load another page
+					query.nextPage();
+					adapter.updateQuery(query);
+					Toast.makeText(ImagePickActivity.this, "Loading more photos", Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
 
 		setContentView(view);
 	}

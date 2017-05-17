@@ -24,7 +24,7 @@ public class UnsplashQuery {
 
 	private final String appID;
 	private int pageNumber = 1;
-	private int perPage = 0;
+	private boolean isLoading;
 
 	public UnsplashQuery(String appID) {
 		this.appID = appID;
@@ -47,8 +47,14 @@ public class UnsplashQuery {
 			@Override
 			protected void onJsonObtained(JSONArray result) {
 				onLoadedListener.onPhotosLoaded(getPhotosFromResult(result));
+				isLoading = false;
 			}
 		}.execute();
+		isLoading = true;
+	}
+
+	public boolean isLoading() {
+		return isLoading;
 	}
 
 	public List<PhotoInfo> getPhotosFromResult(Object result) {
