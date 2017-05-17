@@ -40,6 +40,11 @@ public class ImageQueryAdapter extends RecyclerView.Adapter<ImageViewHolder> {
 	}
 
 	@Override
+	public void onViewRecycled(ImageViewHolder holder) {
+		holder.recycle();
+	}
+
+	@Override
 	public int getItemCount() {
 		return photos.size();
 	}

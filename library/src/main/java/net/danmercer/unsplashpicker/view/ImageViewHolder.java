@@ -23,6 +23,7 @@ class ImageViewHolder extends RecyclerView.ViewHolder {
 	private final ImageView imageView;
 	private final TextView labelView;
 	private PhotoInfo currentPhoto;
+	private Bitmap currentBitmap = null;
 
 	public ImageViewHolder(View itemView) {
 		super(itemView);
@@ -50,6 +51,7 @@ class ImageViewHolder extends RecyclerView.ViewHolder {
 			protected void onBitmapLoaded(Bitmap bitmap) {
 				// If that photo is still the right one to show, show it.
 				if (currentPhoto == photoInfo) {
+					currentBitmap = bitmap;
 					imageView.setImageBitmap(bitmap);
 				} else {
 					// Otherwise, recycle it.
@@ -59,8 +61,18 @@ class ImageViewHolder extends RecyclerView.ViewHolder {
 
 			@Override
 			protected void onBitmapLoadFailed() {
+				// TODO: get a better error image
 				imageView.setImageResource(android.R.drawable.stat_notify_error);
 			}
 		}.execute();
+	}
+
+	public void recycle() {
+		currentPhoto = null;
+		if (currentBitmap != null) {
+			imageView.setImageDrawable(null);
+			currentBitmap.recycle();
+			currentBitmap = null;
+		}
 	}
 }
