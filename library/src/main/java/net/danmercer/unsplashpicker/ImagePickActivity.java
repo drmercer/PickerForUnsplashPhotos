@@ -2,9 +2,11 @@ package net.danmercer.unsplashpicker;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -68,32 +70,27 @@ public class ImagePickActivity extends AppCompatActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.uip_picker, menu);
 
-		// For debugging:
-		menu.add("Search 'bagel'").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+		// Set up search:
+		final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.uip_action_search));
+		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 			@Override
-			public boolean onMenuItemClick(MenuItem menuItem) {
-				query.setSearch("bagel");
+			public boolean onQueryTextSubmit(String text) {
+				query.setSearch(text);
 				adapter.updateQuery(query);
-
 				return true;
 			}
-		});
-		menu.add("Search 'potato'").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem menuItem) {
-				query.setSearch("potato");
-				adapter.updateQuery(query);
 
-				return true;
+			@Override
+			public boolean onQueryTextChange(String newText) {
+				return false;
 			}
 		});
-		menu.add("Clear search").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+		searchView.setOnCloseListener(new SearchView.OnCloseListener() {
 			@Override
-			public boolean onMenuItemClick(MenuItem menuItem) {
-				query.numPerPage(100).cancelSearch();
+			public boolean onClose() {
+				query.cancelSearch();
 				adapter.updateQuery(query);
-
-				return true;
+				return false;
 			}
 		});
 
