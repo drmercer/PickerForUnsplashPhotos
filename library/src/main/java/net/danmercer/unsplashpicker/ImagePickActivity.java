@@ -8,6 +8,10 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import net.danmercer.unsplashpicker.util.UnsplashApiUtils;
+import net.danmercer.unsplashpicker.util.UnsplashQuery;
+import net.danmercer.unsplashpicker.util.async.JsonTask;
+
+import org.json.JSONArray;
 
 /**
  * The main picker activity.
@@ -20,13 +24,25 @@ public class ImagePickActivity extends AppCompatActivity {
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		final String apiKey = UnsplashApiUtils.getApiKey(this);
-		if (apiKey != null) {
-			Toast.makeText(this, "API key: " + apiKey, Toast.LENGTH_SHORT).show();
-		} else {
-			Toast.makeText(this, "Error: No Unsplash API key :(", Toast.LENGTH_SHORT).show();
+		final String appID = UnsplashApiUtils.getApiKey(this);
+		if (appID == null) {
+			Toast.makeText(this, "Error: no app ID!", Toast.LENGTH_LONG).show();
 			finish();
 		}
+
+		// Testing querying stuff:
+
+		final UnsplashQuery query = new UnsplashQuery(appID);
+
+		final JsonTask task = new JsonTask<JSONArray>(query.toURL()) {
+			@Override
+			protected void onJsonObtained(JSONArray arr) {
+				final int length = arr.length();
+				// length should be 10
+				Toast.makeText(ImagePickActivity.this, length == 10 ? "Success!" : "Error. Wrong array length :(", Toast.LENGTH_SHORT).show();
+			}
+		};
+		task.execute();
 	}
 
 	@Override
