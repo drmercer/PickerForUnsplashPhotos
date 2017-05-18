@@ -88,7 +88,18 @@ public class ImagePickActivity extends AppCompatActivity {
 	 */
 	@NonNull
 	protected GridLayoutManager getLayoutManager() {
-		return new GridLayoutManager(this, 2);
+		final GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+		layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+			@Override
+			public int getSpanSize(int position) {
+				if (adapter.isLoaderShown() && position+1 == adapter.getItemCount()) {
+					return 2;
+				} else {
+					return 1;
+				}
+			}
+		});
+		return layoutManager;
 	}
 
 	/**
