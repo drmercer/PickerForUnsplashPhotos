@@ -1,6 +1,7 @@
 package net.danmercer.unsplashpicker;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -87,7 +88,13 @@ public class ImagePickHelper {
 	 * Call this to launch the photo picker Activity.
 	 */
 	public void launchPickerActivity() {
-		activity.startActivityForResult(new Intent(activity, targetActivity), REQUEST_CODE);
+		try {
+			activity.startActivityForResult(new Intent(activity, targetActivity), REQUEST_CODE);
+		} catch (ActivityNotFoundException e) {
+			throw new IllegalStateException(
+					"Failed to start activity " + targetActivity.getSimpleName()
+							+ ". Are you sure you put it in your app's manifest?", e);
+		}
 	}
 
 	/**
