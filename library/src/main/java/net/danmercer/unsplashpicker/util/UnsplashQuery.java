@@ -44,14 +44,18 @@ public class UnsplashQuery {
 	}
 
 	public UnsplashQuery setSearch(String searchQuery) {
-		reset();
-		this.searchQuery = searchQuery;
+		if (!searchQuery.equals(this.searchQuery)) {
+			reset();
+			this.searchQuery = searchQuery;
+		}
 		return this; // for chaining
 	}
 
 	public UnsplashQuery cancelSearch() {
-		reset();
-		this.searchQuery = null;
+		if (searchQuery != null) {
+			reset();
+			this.searchQuery = null;
+		}
 		return this; // for chaining
 	}
 

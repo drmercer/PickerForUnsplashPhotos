@@ -22,7 +22,13 @@
             android:name="net.danmercer.unsplashpicker.ImagePickActivity"
             android:theme="@style/AppTheme"
             android:label="Overridden Label"
+            android:parentActivityName=".MainActivity"
             tools:replace="android:label,android:theme">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+
         </activity>
 
         <meta-data

@@ -39,6 +39,7 @@ public class ImagePickActivity extends AppCompatActivity {
 	private ImageQueryAdapter adapter;
 	private UnsplashQuery query;
 	private String appID;
+	private SearchView searchView;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,7 +92,7 @@ public class ImagePickActivity extends AppCompatActivity {
 		getMenuInflater().inflate(R.menu.uip_picker, menu);
 
 		// Set up search:
-		final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.uip_action_search));
+		searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.uip_action_search));
 		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 			@Override
 			public boolean onQueryTextSubmit(String text) {
@@ -117,6 +118,22 @@ public class ImagePickActivity extends AppCompatActivity {
 		return true;
 	}
 
+	/**
+	 * Hides the search UI.
+	 * @return true if the search was active, false if not (and nothing was done).
+	 */
+	private boolean cancelSearch() {
+		if (searchView != null && !searchView.isIconified()) {
+			// Empty the query:
+			searchView.setQuery("", false);
+			// Close the search view:
+			searchView.setIconified(true);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		final int id = item.getItemId();
@@ -138,8 +155,24 @@ public class ImagePickActivity extends AppCompatActivity {
 			db.show();
 
 			return true;
+
+		} else if (id == android.R.id.home) {
+
+			// If Up button is pressed while the Search UI is shown, hide it. (Otherwise, proceed as
+			// normal.)
+			if (cancelSearch()) {
+				return true;
+			}
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void onBackPressed() {
+		// Only actually go back if the Search UI isn't shown. If it is, just hide it.
+		if (!cancelSearch()) {
+			super.onBackPressed();
+		}
 	}
 
 	private void downloadAndFinish(PhotoInfo photo) {
