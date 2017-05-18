@@ -44,6 +44,9 @@ public class ImagePickHelper {
 	// The Unsplash API app ID.
 	private final String appID;
 
+	// The picker activity class to be used.
+	private Class<? extends ImagePickActivity> targetActivity = ImagePickActivity.class;
+
 	// The ID of the photo which was picked in the ImagePickActivity
 	private String photoID;
 
@@ -69,10 +72,22 @@ public class ImagePickHelper {
 	}
 
 	/**
+	 * Call this to specify a subclass of {@link ImagePickActivity} to use. If this is never called,
+	 * it just uses ImagePickActivity directly.
+	 *
+	 * @param pickerActivity The ImagePickActivity subclass to use.
+	 * @return <code>this</code> for chaining.
+	 */
+	public ImagePickHelper setPickerActivityClass(Class<? extends ImagePickActivity> pickerActivity) {
+		this.targetActivity = pickerActivity;
+		return this; // for chaining
+	}
+
+	/**
 	 * Call this to launch the photo picker Activity.
 	 */
 	public void launchPickerActivity() {
-		activity.startActivityForResult(new Intent(activity, ImagePickActivity.class), REQUEST_CODE);
+		activity.startActivityForResult(new Intent(activity, targetActivity), REQUEST_CODE);
 	}
 
 	/**

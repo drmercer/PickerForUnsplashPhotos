@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 
 		pickHelper = new ImagePickHelper(this);
+		pickHelper.setPickerActivityClass(SubclassActivity.class);
 
 		btn = new Button(this);
 		btn.setText("Click me");
