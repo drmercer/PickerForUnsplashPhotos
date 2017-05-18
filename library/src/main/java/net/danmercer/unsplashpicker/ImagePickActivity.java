@@ -2,6 +2,7 @@ package net.danmercer.unsplashpicker;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
@@ -31,24 +32,23 @@ public class ImagePickActivity extends AppCompatActivity {
 
 	private ImageQueryAdapter adapter;
 	private UnsplashQuery query;
-	private String appID;
 	private SearchView searchView;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		appID = UnsplashApiUtils.getApiKey(this);
+		final String appID = UnsplashApiUtils.getApiKey(this);
 
 		ImageRecyclerView view = new ImageRecyclerView(this);
-
-		final GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
-		view.setLayoutManager(layoutManager);
 
 		adapter = new ImageQueryAdapter(this);
 		view.setAdapter(adapter);
 
-		query = new UnsplashQuery(appID);
+		final GridLayoutManager layoutManager = getLayoutManager();
+		view.setLayoutManager(layoutManager);
+
+		query = initQuery(appID);
 		adapter.updateQuery(query);
 
 		// Listen for scroll to the end, and load more photos
@@ -79,6 +79,34 @@ public class ImagePickActivity extends AppCompatActivity {
 		setContentView(view);
 	}
 
+	/**
+	 * Called by {@link #onCreate(Bundle)} to get a layout manager for the recycler view. The
+	 * default implementation returns a GridLayoutManager with 2 spans per row. Override this method
+	 * to tweak the LayoutManager.
+	 *
+	 * @return The GridLayoutManager to use.
+	 */
+	@NonNull
+	protected GridLayoutManager getLayoutManager() {
+		return new GridLayoutManager(this, 2);
+	}
+
+	/**
+	 * Called to initialze the UnsplashQuery object that is used to show photos. The default
+	 * implementation just returns <code>new UnsplashQuery(appID)</code>, which just loads curated
+	 * photos 20 at a time. Override this to modify the initial state of the query.
+	 *
+	 * @param appID
+	 *          The app ID. Pass this to the {@link UnsplashQuery#UnsplashQuery(String)}
+	 *          constructor.
+	 * @return
+	 *          The new UnsplashQuery object.
+	 */
+	@NonNull
+	protected UnsplashQuery initQuery(String appID) {
+		return new UnsplashQuery(appID);
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.uip_picker, menu);
@@ -88,21 +116,20 @@ public class ImagePickActivity extends AppCompatActivity {
 		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 			@Override
 			public boolean onQueryTextSubmit(String text) {
-				query.setSearch(text);
-				adapter.updateQuery(query);
+				onSearchSubmitted(text);
 				return true;
 			}
 
 			@Override
 			public boolean onQueryTextChange(String newText) {
+				onSearchTextChanged(newText);
 				return false;
 			}
 		});
 		searchView.setOnCloseListener(new SearchView.OnCloseListener() {
 			@Override
 			public boolean onClose() {
-				query.cancelSearch();
-				adapter.updateQuery(query);
+				onSearchClosed();
 				return false;
 			}
 		});
@@ -111,10 +138,42 @@ public class ImagePickActivity extends AppCompatActivity {
 	}
 
 	/**
+	 * Called whenever the search text changes (e.g. as the user types). The default implementation
+	 * does nothing - the user must submit the search for anything to happen - but if you want to
+	 * show results instantly then just call {@link #onSearchSubmitted(String)} from this method.
+	 *
+	 * @param text
+	 *          The current text in the search field.
+	 */
+	protected void onSearchTextChanged(String text) { /* Does nothing by default */ }
+
+	/**
+	 * Called whenever a search query is submitted by the user. The default implementation performs
+	 * the search by updating the current query.
+	 * @param text
+	 *          The search string.
+	 */
+	protected void onSearchSubmitted(String text) {
+		query.setSearch(text);
+		adapter.updateQuery(query);
+	}
+
+	/**
+	 * Called whenever the search UI is closed (whether by the user or programmatically). The
+	 * default implementation cancels the search by calling {@link UnsplashQuery#cancelSearch()}
+	 * on the query.
+	 */
+	protected void onSearchClosed() {
+		query.cancelSearch();
+		adapter.updateQuery(query);
+	}
+
+	/**
 	 * Hides the search UI.
+	 *
 	 * @return true if the search was active, false if not (and nothing was done).
 	 */
-	private boolean cancelSearch() {
+	protected boolean cancelSearch() {
 		if (searchView != null && !searchView.isIconified()) {
 			// Empty the query:
 			searchView.setQuery("", false);
@@ -159,6 +218,9 @@ public class ImagePickActivity extends AppCompatActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	/**
+	 * If the Search UI is shown, hides it. Otherwise, does the normal back button behavior.
+	 */
 	@Override
 	public void onBackPressed() {
 		// Only actually go back if the Search UI isn't shown. If it is, just hide it.
