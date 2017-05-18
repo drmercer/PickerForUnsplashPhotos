@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import net.danmercer.unsplashpicker.R;
 import net.danmercer.unsplashpicker.data.PhotoInfo;
@@ -21,8 +20,9 @@ import java.util.List;
 
 public class ImageQueryAdapter extends RecyclerView.Adapter<ViewHolder> {
 
-	private static final int TYPE_IMAGE = 0;
+	public static final int TYPE_IMAGE = 0;
 	private static final int TYPE_LOADER = 1;
+	private static final int TYPE_NO_RESULTS_TEXT = 2;
 
 	public interface OnPhotoChosenListener {
 		void onPhotoChosen(PhotoInfo choice);
@@ -33,6 +33,7 @@ public class ImageQueryAdapter extends RecyclerView.Adapter<ViewHolder> {
 	private List<PhotoInfo> photos = new ArrayList<>();
 	private ImageQueryAdapter.OnPhotoChosenListener photoChosenListener = null;
 	private boolean showLoaderAtBottom = false;
+	private boolean noMorePictures = false;
 
 	public ImageQueryAdapter(Context context) {
 		inflater = LayoutInflater.from(context);
@@ -49,7 +50,13 @@ public class ImageQueryAdapter extends RecyclerView.Adapter<ViewHolder> {
 
 	@Override
 	public int getItemViewType(int position) {
-		return position < photos.size() ? TYPE_IMAGE : TYPE_LOADER;
+		if (position < photos.size()) {
+			return TYPE_IMAGE;
+		} else if (isLoaderShown()){
+			return TYPE_LOADER;
+		} else {
+			return TYPE_NO_RESULTS_TEXT;
+		}
 	}
 
 	@Override
@@ -64,6 +71,10 @@ public class ImageQueryAdapter extends RecyclerView.Adapter<ViewHolder> {
 
 		case TYPE_LOADER:
 			view = inflater.inflate(R.layout.uip_list_loader_item, parent, false);
+			return new ViewHolder(view) {};
+
+		case TYPE_NO_RESULTS_TEXT:
+			view = inflater.inflate(R.layout.uip_list_no_results_item, parent, false);
 			return new ViewHolder(view) {};
 
 		default:
@@ -111,24 +122,39 @@ public class ImageQueryAdapter extends RecyclerView.Adapter<ViewHolder> {
 	@Override
 	public int getItemCount() {
 		int itemCount = photos.size();
+		// Count the loader as an item
 		if (showLoaderAtBottom) itemCount += 1;
+		// If there aren't any photos and it's not loading, count the "no photos" text.
+		if (itemCount == 0 && noMorePictures) itemCount = 1;
+
 		return itemCount;
 	}
 
 	public void updateQuery(UnsplashQuery query) {
 		if (query.isNew()) {
-			final int size = photos.size();
+			// Restart photo list, since it's a new search
+			setLoaderShown(false);
+			final int size = getItemCount();
+			noMorePictures = false;
 			photos.clear();
 			notifyItemRangeRemoved(0, size);
+
+		} else if (noMorePictures) {
+			// Do nothing, since the last query didn't get anything
+			return;
 		}
 		setLoaderShown(true);
 		query.load(new UnsplashQuery.OnLoadedListener() {
 			@Override
 			public void onPhotosLoaded(List<PhotoInfo> newPhotos) {
-				int insertPosition = photos.size();
-				photos.addAll(newPhotos);
-				notifyItemRangeInserted(insertPosition, newPhotos.size());
 				setLoaderShown(false);
+				if (newPhotos.size() == 0) {
+					noMorePictures = true;
+				} else {
+					int insertPosition = photos.size();
+					photos.addAll(newPhotos);
+					notifyItemRangeInserted(insertPosition, newPhotos.size());
+				}
 			}
 		});
 	}

@@ -58,7 +58,7 @@ abstract class HttpTask<T> extends AsyncTask<Void, Void, T> {
 			return readStream(reader);
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.e(TAG, "Error with Http connection", e);
 		} finally {
 			if (reader != null) {
 				try {

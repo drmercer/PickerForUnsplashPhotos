@@ -92,10 +92,10 @@ public class ImagePickActivity extends AppCompatActivity {
 		layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
 			@Override
 			public int getSpanSize(int position) {
-				if (adapter.isLoaderShown() && position+1 == adapter.getItemCount()) {
-					return 2;
-				} else {
+				if (adapter.getItemViewType(position) == ImageQueryAdapter.TYPE_IMAGE) {
 					return 1;
+				} else {
+					return 2;
 				}
 			}
 		});
