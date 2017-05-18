@@ -66,7 +66,7 @@ public class UnsplashQuery {
 
 	public String toURL() {
 		if (searchQuery == null) {
-			return new QueryStringBuilder("https://api.unsplash.com/photos")
+			return new QueryStringBuilder("https://api.unsplash.com/photos/curated")
 					.add("client_id", appID)
 					.add("page", pageNumber)
 					.add("per_page", numPerPage)
