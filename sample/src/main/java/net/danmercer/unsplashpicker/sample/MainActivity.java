@@ -3,41 +3,31 @@ package net.danmercer.unsplashpicker.sample;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
-import net.danmercer.unsplashpicker.ImagePickActivity;
-
-import java.io.File;
-import java.io.IOException;
+import net.danmercer.unsplashpicker.ImagePickHelper;
 
 public class MainActivity extends AppCompatActivity {
 
-	private static final int REQUEST_IMAGE = 10;
 	private Button btn;
+	private ImagePickHelper pickHelper;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		pickHelper = new ImagePickHelper(this);
 
 		btn = new Button(this);
 		btn.setText("Click me");
 		btn.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				final Intent intent = new Intent(MainActivity.this, ImagePickActivity.class);
-
-				// Both the output file extra and the dimension extras are optional.
-				File dest = new File(getCacheDir(), "bagel.jpg");
-				intent.putExtra(ImagePickActivity.EXTRA_OUTPUT_FILE_PATH, dest.getPath());
-				intent.putExtra(ImagePickActivity.EXTRA_IMAGE_WIDTH, view.getWidth());
-				intent.putExtra(ImagePickActivity.EXTRA_IMAGE_HEIGHT, view.getHeight());
-
-				startActivityForResult(intent, REQUEST_IMAGE);
+				pickHelper.launchPickerActivity();
 			}
 		});
 
@@ -46,20 +36,24 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == REQUEST_IMAGE) {
+		if (pickHelper.handleActivityResult(requestCode, resultCode, data)) {
 
-			if (resultCode == RESULT_OK) {
-				try {
-					Uri uri = data.getData();
-					Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-					btn.setBackgroundDrawable(new BitmapDrawable(bitmap));
-				} catch (IOException e) {
-					e.printStackTrace();
+			// Tell helper to download image as bitmap
+			pickHelper.setDimens(btn.getWidth(), btn.getHeight());
+			pickHelper.download(new ImagePickHelper.OnBitmapDownloadedListener() {
+				@Override
+				public void onBitmapDownloaded(Bitmap bmp) {
+					btn.setBackgroundDrawable(new BitmapDrawable(getResources(), bmp));
 				}
-			}
 
-			return;
+				@Override
+				public void onBitmapDownloadError() {
+					Toast.makeText(MainActivity.this, "Error downloading image. :(", Toast.LENGTH_SHORT).show();
+				}
+			});
+
+		} else {
+			super.onActivityResult(requestCode, resultCode, data);
 		}
-		super.onActivityResult(requestCode, resultCode, data);
 	}
 }

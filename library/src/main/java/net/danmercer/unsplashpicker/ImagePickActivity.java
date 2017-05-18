@@ -1,7 +1,6 @@
 package net.danmercer.unsplashpicker;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
@@ -15,16 +14,12 @@ import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import net.danmercer.unsplashpicker.data.PhotoInfo;
 import net.danmercer.unsplashpicker.util.UnsplashApiUtils;
 import net.danmercer.unsplashpicker.util.UnsplashQuery;
-import net.danmercer.unsplashpicker.util.async.PhotoDownloader;
 import net.danmercer.unsplashpicker.view.ImageQueryAdapter;
 import net.danmercer.unsplashpicker.view.ImageRecyclerView;
-
-import java.io.File;
 
 /**
  * The main picker activity.
@@ -32,9 +27,7 @@ import java.io.File;
  * @author Dan Mercer
  */
 public class ImagePickActivity extends AppCompatActivity {
-	public static final String EXTRA_IMAGE_WIDTH = "net.danmercer.unsplashpicker.IMAGE_WIDTH";
-	public static final String EXTRA_IMAGE_HEIGHT = "net.danmercer.unsplashpicker.IMAGE_HEIGHT";
-	public static final String EXTRA_OUTPUT_FILE_PATH = "net.danmercer.unsplashpicker.OUTPUT_FILE";
+	static final String EXTRA_PHOTO_ID = "net.danmercer.unsplashpicker.PHOTO_ID";
 
 	private ImageQueryAdapter adapter;
 	private UnsplashQuery query;
@@ -46,10 +39,6 @@ public class ImagePickActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 
 		appID = UnsplashApiUtils.getApiKey(this);
-		if (appID == null) {
-			Toast.makeText(this, "Development error: no app ID!", Toast.LENGTH_LONG).show();
-			finish();
-		}
 
 		ImageRecyclerView view = new ImageRecyclerView(this);
 
@@ -80,7 +69,10 @@ public class ImagePickActivity extends AppCompatActivity {
 		adapter.setOnPhotoChosenListener(new ImageQueryAdapter.OnPhotoChosenListener() {
 			@Override
 			public void onPhotoChosen(PhotoInfo choice) {
-				downloadAndFinish(choice);
+				final Intent result = new Intent();
+				result.putExtra(EXTRA_PHOTO_ID, choice.id);
+				setResult(RESULT_OK, result);
+				finish();
 			}
 		});
 
@@ -173,29 +165,5 @@ public class ImagePickActivity extends AppCompatActivity {
 		if (!cancelSearch()) {
 			super.onBackPressed();
 		}
-	}
-
-	private void downloadAndFinish(PhotoInfo photo) {
-		final Intent intent = getIntent();
-
-		// Get destination for download
-		String dest = intent.getStringExtra(EXTRA_OUTPUT_FILE_PATH);
-		final File file = (dest != null) ? new File(dest) : new File(getCacheDir(), "unsplash-image.jpg");
-
-		final PhotoDownloader downloader = new PhotoDownloader(photo, file, appID);
-
-		// Get dimension parameters if specified
-		downloader.setDimens(intent.getIntExtra(EXTRA_IMAGE_WIDTH, 0),
-				intent.getIntExtra(EXTRA_IMAGE_HEIGHT, 0));
-
-		downloader.download(new PhotoDownloader.OnDownloadCompleteListener() {
-			@Override
-			public void onDownloadComplete(File file) {
-				final Intent result = new Intent();
-				result.setData(Uri.fromFile(file));
-				setResult(RESULT_OK, result);
-				finish();
-			}
-		});
 	}
 }

@@ -20,16 +20,20 @@ public class UnsplashApiUtils {
 	 * @return the API key specified in the app's manifest, or null if no valid key is specified.
 	 */
 	public static String getApiKey(Context context) {
+		final String ERROR_MSG = "An app ID for the Unsplash API must be specified in the Manifest!";
 		try {
 			final ApplicationInfo info = context.getPackageManager()
 					.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
 			final Bundle metadata = info.metaData;
 
-			return metadata.getString("net.danmercer.unsplashpicker.unsplash_app_id");
+			final String appID = metadata.getString("net.danmercer.unsplashpicker.unsplash_app_id");
+			if (appID == null) {
+				throw new IllegalStateException(ERROR_MSG);
+			}
+			return appID;
 
 		} catch (PackageManager.NameNotFoundException e) {
-			Log.e(TAG, "Error getting API key:", e);
-			return null;
+			throw new IllegalStateException(ERROR_MSG, e);
 		}
 	}
 
@@ -60,5 +64,11 @@ public class UnsplashApiUtils {
 
 	public static String getUnsplashAttribUrl(Context context) {
 		return addUtmParams("https://unsplash.com/", context);
+	}
+
+	public static String getPhotoDetailsUrl(String id, String appID) {
+		return new QueryStringBuilder("https://api.unsplash.com/photos/" + id)
+				.add("client_id", appID)
+				.build();
 	}
 }
