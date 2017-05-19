@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,7 +20,7 @@ import net.danmercer.unsplashpicker.util.async.BitmapTask;
  * @author Dan Mercer
  */
 
-class ImageViewHolder extends RecyclerView.ViewHolder {
+class ImageViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
 	private final ImageView imageView;
 	private final TextView labelView;
@@ -31,6 +33,32 @@ class ImageViewHolder extends RecyclerView.ViewHolder {
 		this.imageView = (ImageView) itemView.findViewById(R.id.uip_item_image);
 		imageView.setOnClickListener(listener);
 		this.labelView = (TextView) itemView.findViewById(R.id.uip_item_label);
+
+		imageView.setOnCreateContextMenuListener(this);
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu contextMenu, View view,
+	                                ContextMenu.ContextMenuInfo contextMenuInfo) {
+		// Header:
+		contextMenu.setHeaderTitle(R.string.uip_context_title);
+
+		// "View in Browser" item:
+		final MenuItem viewItem = contextMenu.add(R.string.uip_context_action_view_in_browser);
+		final Context context = view.getContext();
+		final String url = UnsplashApiUtils.addUtmParams(currentPhoto.webPhotoURL, context);
+		viewItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem menuItem) {
+				if (currentPhoto == null) {
+					return true;
+				}
+				final Intent i = new Intent(Intent.ACTION_VIEW);
+				i.setData(Uri.parse(url));
+				context.startActivity(i);
+				return true;
+			}
+		});
 	}
 
 	void loadPhoto(final PhotoInfo photoInfo) {

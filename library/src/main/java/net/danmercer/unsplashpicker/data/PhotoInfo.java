@@ -2,7 +2,6 @@ package net.danmercer.unsplashpicker.data;
 
 import android.util.Log;
 
-import net.danmercer.unsplashpicker.util.QueryStringBuilder;
 import net.danmercer.unsplashpicker.util.UnsplashApiUtils;
 
 import org.json.JSONArray;
@@ -21,18 +20,20 @@ public class PhotoInfo {
 	public final String authorName;
 	public final String authorURL;
 	public final String thumbPhotoURL;
+	public final String webPhotoURL;
 	public final String id;
 
 	//=================================================
 	//        Static factory methods
 
-	public static PhotoInfo getFromJson(JSONObject json) throws JSONException {
+	private static PhotoInfo getFromJson(JSONObject json) throws JSONException {
 		final JSONObject authorData = json.getJSONObject("user");
 		String authorName = authorData.getString("name");
 		String authorURL = authorData.getJSONObject("links").getString("html");
 		String thumbPhotoUrl = json.getJSONObject("urls").getString("small");
+		String webPhotoUrl = json.getJSONObject("links").getString("html");
 		String id = json.getString("id");
-		return new PhotoInfo(authorName, authorURL, thumbPhotoUrl, id);
+		return new PhotoInfo(authorName, authorURL, thumbPhotoUrl, webPhotoUrl, id);
 	}
 
 	public static List<PhotoInfo> getAllFromJson(JSONArray results) {
@@ -51,10 +52,11 @@ public class PhotoInfo {
 	//=================================================
 	//        Instance
 
-	public PhotoInfo(String authorName, String authorURL, String thumbPhotoURL, String id) {
+	private PhotoInfo(String authorName, String authorURL, String thumbPhotoURL, String webPhotoUrl, String id) {
 		this.authorName = authorName;
 		this.authorURL = authorURL;
 		this.thumbPhotoURL = thumbPhotoURL;
+		this.webPhotoURL = webPhotoUrl;
 		this.id = id;
 	}
 

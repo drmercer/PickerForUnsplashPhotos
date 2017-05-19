@@ -12,4 +12,6 @@
     <string name="uip_about_title">About</string>
     <string name="uip_search_title">Search</string>
     <string name="uip_no_results_text">No photos</string>
+    <string name="uip_context_title">Photo</string>
+    <string name="uip_context_action_view_in_browser">View in Browser</string>
 </resources>
