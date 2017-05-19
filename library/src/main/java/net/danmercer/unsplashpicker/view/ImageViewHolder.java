@@ -24,15 +24,16 @@ class ImageViewHolder extends RecyclerView.ViewHolder {
 	private final TextView labelView;
 	private PhotoInfo currentPhoto;
 	private Bitmap currentBitmap = null;
+	private BitmapTask currentTask = null;
 
-	public ImageViewHolder(View itemView, View.OnClickListener listener) {
+	ImageViewHolder(View itemView, View.OnClickListener listener) {
 		super(itemView);
 		this.imageView = (ImageView) itemView.findViewById(R.id.uip_item_image);
 		imageView.setOnClickListener(listener);
 		this.labelView = (TextView) itemView.findViewById(R.id.uip_item_label);
 	}
 
-	public void loadPhoto(final PhotoInfo photoInfo) {
+	void loadPhoto(final PhotoInfo photoInfo) {
 		recycle();
 
 		this.currentPhoto = photoInfo;
@@ -51,7 +52,7 @@ class ImageViewHolder extends RecyclerView.ViewHolder {
 
 		imageView.setTag(photoInfo);
 
-		new BitmapTask(photoInfo.thumbPhotoURL) {
+		currentTask = new BitmapTask(photoInfo.thumbPhotoURL) {
 			@Override
 			protected void onBitmapLoaded(Bitmap bitmap) {
 				// If that photo is still the right one to show, show it.
@@ -62,21 +63,27 @@ class ImageViewHolder extends RecyclerView.ViewHolder {
 					// Otherwise, recycle it.
 					bitmap.recycle();
 				}
+				currentTask = null;
 			}
 
 			@Override
 			protected void onBitmapLoadFailed() {
 				// TODO: get a better error image
 				imageView.setImageResource(android.R.drawable.stat_notify_error);
+				currentTask = null;
 			}
-		}.execute();
+		};
+		currentTask.execute();
 	}
 
-	public void recycle() {
+	void recycle() {
 		currentPhoto = null;
+		imageView.setTag(null);
+		if (currentTask != null) {
+			currentTask.cancel(false);
+		}
 		if (currentBitmap != null) {
 			imageView.setImageDrawable(null);
-			imageView.setTag(null);
 			currentBitmap.recycle();
 			currentBitmap = null;
 		}

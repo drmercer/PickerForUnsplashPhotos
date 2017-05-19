@@ -28,6 +28,13 @@ public abstract class BitmapTask extends HttpTask<Bitmap> {
 		}
 	}
 
+	@Override
+	protected void onCancelled(Bitmap bitmap) {
+		if (bitmap != null) {
+			bitmap.recycle();
+		}
+	}
+
 	protected abstract void onBitmapLoaded(Bitmap bitmap);
 	protected abstract void onBitmapLoadFailed();
 }
