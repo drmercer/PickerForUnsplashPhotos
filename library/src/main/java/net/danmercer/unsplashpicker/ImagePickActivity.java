@@ -58,9 +58,16 @@ public class ImagePickActivity extends AppCompatActivity {
 				final int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
 				final int itemCount = adapter.getItemCount();
 				if (lastVisibleItemPosition+1 >= itemCount && !query.isLoading()) {
-					// Scroll has reached the end, load another page
-					query.nextPage();
-					adapter.updateQuery(query);
+					// Scroll has reached the end, load another page (but not in the scroll
+					// listener, because that causes bugs when notify*() is called on the
+					// recyclerView).
+					recyclerView.post(new Runnable() {
+						@Override
+						public void run() {
+							query.nextPage();
+							adapter.updateQuery(query);
+						}
+					});
 				}
 			}
 		});
