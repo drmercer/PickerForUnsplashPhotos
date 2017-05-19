@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -229,9 +230,15 @@ public class ImagePickActivity extends AppCompatActivity {
 
 			// If Up button is pressed while the Search UI is shown, hide it. (Otherwise, proceed as
 			// normal.)
-			if (cancelSearch()) {
-				return true;
+			if (!cancelSearch()) {
+
+				// Do 'Up' behavior
+				final Intent intent = NavUtils.getParentActivityIntent(this);
+				intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+				NavUtils.navigateUpTo(this, intent);
+
 			}
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
