@@ -1,5 +1,5 @@
 # Picker for Unsplash Photos
-An Android library that provides a picker UI for choosing photos from [Unsplash](https://unsplash.com).
+An Android library that provides a picker UI for choosing photos from [Unsplash](https://unsplash.com)'s photo collection.
 It uses the [Unsplash API](https://api.unsplash.com/) to show a list of photos and allows the user to
 choose one.
 
