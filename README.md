@@ -57,8 +57,8 @@ like this:
 
                 @Override
                 public void onBitmapDownloadError() {
-                    Toast.makeText(MainActivity.this, "Error downloading image. :(", Toast.LENGTH_SHORT).show();
-                }
+                    // Handle error
+                }
             });
 
         } else {
@@ -91,7 +91,7 @@ then call
 ```
 (where `YourSubclassActivty` is your subclass) before calling
 `launchPickerActivity()`. Read the
-[ImagePickActivity source](library/src/main/java/net/danmercer/unsplashpicker/ImagePickerActivity.java)
+[ImagePickActivity source](library/src/main/java/net/danmercer/unsplashpicker/ImagePickActivity.java)
 to see what methods you can override in your subclass.
 
 # Trello board
